@@ -115,7 +115,7 @@
                   <td>${singleData.name} </td>
                   <td>${singleData.email}</td>
                   <td>${singleData.password}</td>      
-                  <td><a class="btn btn-primary" href="javascript:(0)" data-toggle="modal" data-target="#exampleModal" onclick="fetchUserData('${singleData.id}')">edit</a></td>
+                  <td><a class="btn btn-primary" href="/edit/${singleData.id}">edit</a> <a class="btn btn-danger" href="/delete/${singleData.id}">delete</a></td>
               </tr>`
             );
           }).join('');

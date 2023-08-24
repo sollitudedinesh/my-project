@@ -8,13 +8,13 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
-const port = 8000;
+const port = process.env.PORT || 8000;
 
 app.use(bodyParser.urlencoded({ extended:true }));
 
 app.use(bodyParser.json());
 
-app.listen(8000, 'localhost', () => {
+app.listen(port, 'localhost', () => {
   console.log('loading please wait');
 });
 
@@ -22,16 +22,19 @@ const loginView = fs.readFileSync(`${__dirname}/templates/login.html`,'utf-8');
 
 const detailsView = fs.readFileSync(`${__dirname}/templates/registerDetails.html`,'utf-8');
 
+const editDetails = fs.readFileSync(`${__dirname}/templates/editDetails.html`,'utf-8')
+
 app.get('/login',(req, res) => {
   res.send(loginView);
 })
 
-app.get('/add',(req, res) => {
+app.post('/add',(req, res) => {
   // app.use(bodyParser.urlencoded({extended: true}));
-  var name = req.query.fullname;
-  var email = req.query.email;
-  var password = req.query.password;
-  var confirmpassword = req.query.confirmpassword;
+  console.log(req.body);
+  var name = req.body.fullname;
+  var email = req.body.email;
+  var password = req.body.password;
+  // var confirmpassword = req.body.confirmpassword;
 
   var sql = `INSERT into user (name,email,password) VALUES ('${name}','${email}','${password}')`;
 
@@ -45,16 +48,8 @@ app.get('/add',(req, res) => {
   })
 })
 
-app.get('/fetchUser/:id',(req, res) => {
-  var id = req.params.id;
-  var sql = `SELECT * from user where id=${id}`;
-  db.query(sql, (err, result) => {
-    if(err){
-      res.send(err);
-    }else{
-      res.send(JSON.stringify(result));
-    }
-  })
+app.get('/edit/:id',(req, res) => {
+  res.send(editDetails);
 })
 
 app.get('/registerDetails',(req, res) => {
@@ -62,13 +57,56 @@ app.get('/registerDetails',(req, res) => {
 })
 
 app.get('/api/v1/registerDetails',(req, res) => {
-  var sql = `SELECT * from user`;
+  var sql = `SELECT * from user where active_status='1'`;
   db.query(sql, function(err, result) {
     if(err){
       res.status(404).send('something went wrong');
     }else{
       const users = JSON.stringify(result);
       res.send(users);
+    }
+  })
+})
+
+app.get('/api/v1/fetchDetails/:id',(req, res) => {
+  var sql = `SELECT * from user where id='${req.params.id}'`;
+
+  db.query(sql, (err, result) => {
+    if(err){
+      res.status(404).send('something went wrong');
+    }else{
+      res.send(result);
+    }
+  })
+})
+
+app.post('/updateDetails',(req, res) => {
+  const name = req.body.name;
+  const email = req.body.email;
+  const password = req.body.password;
+  const id = req.body.user_id;
+
+  var sql = `UPDATE user SET name="${name}",email="${email}",password="${password}" where id="${id}"`;
+
+  db.query(sql, (err, result) => {
+    if(err){
+      res.status(404).send('something went wrong');
+    }else{
+      res.redirect('/registerDetails');
+    }
+  })
+})
+
+app.get('/delete/:id', (req, res) => {
+  const status = '2';
+
+  var sql = `UPDATE user set active_status="${status}" where id="${req.params.id}"`;
+
+  db.query(sql, (err, result) => {
+    if(err){
+      res.status(404).send('Something went wrong');
+    }else{
+      res.redirect('/registerDetails');
     }
   })
 })
