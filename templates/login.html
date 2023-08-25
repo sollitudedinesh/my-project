@@ -522,7 +522,7 @@ a.btn-goback:hover {
       </ul>
     </div>
     <div ng-app ng-init="checked = false">
-      <form class="form-signin" action="" method="post" name="form">
+      <form class="form-signin" action="/submitLogin" method="post" name="form">
         <label for="username">Username</label>
         <input class="form-styling" type="text" name="username" placeholder="" />
         <label for="password">Password</label>
@@ -530,7 +530,7 @@ a.btn-goback:hover {
         <input type="checkbox" id="checkbox" />
         <label for="checkbox"><span class="ui"></span>Keep me signed in</label>
         <div class="btn-animate">
-          <a class="btn-signin" href="/registerDetails">Sign in</a>
+          <button class="btn-signin" type="submit">Sign in</button>
         </div>
       </form>
 
